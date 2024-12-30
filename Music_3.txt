@@ -1,0 +1,81 @@
+-- سكربت لتشغيل الأغاني على مستوى الخادم
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local SongInput = Instance.new("TextBox")
+local PlayButton = Instance.new("TextButton")
+local CloseButton = Instance.new("TextButton")
+local DraggableArea = Instance.new("TextButton")
+
+-- إعداد الواجهة
+ScreenGui.Parent = game.CoreGui
+ScreenGui.Name = "MusicPlayer"
+
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Frame.Size = UDim2.new(0, 300, 0, 200)
+Frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+
+DraggableArea.Parent = Frame
+DraggableArea.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+DraggableArea.Size = UDim2.new(1, 0, 0, 30)
+DraggableArea.Text = ""
+DraggableArea.Draggable = true
+
+Title.Parent = DraggableArea
+Title.BackgroundTransparency = 1
+Title.Text = "Music Player (DRACO)"
+Title.TextColor3 = Color3.fromRGB(255, 0, 0)
+Title.Font = Enum.Font.SourceSansBold
+Title.TextSize = 18
+Title.Size = UDim2.new(1, 0, 1, 0)
+
+CloseButton.Parent = Frame
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -35, 0, 5)
+
+SongInput.Parent = Frame
+SongInput.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SongInput.Text = "Enter Song ID"
+SongInput.TextColor3 = Color3.fromRGB(0, 0, 0)
+SongInput.Font = Enum.Font.SourceSans
+SongInput.Size = UDim2.new(0.9, 0, 0, 40)
+SongInput.Position = UDim2.new(0.05, 0, 0.3, 0)
+
+PlayButton.Parent = Frame
+PlayButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+PlayButton.Text = "Play for Everyone"
+PlayButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+PlayButton.Font = Enum.Font.SourceSansBold
+PlayButton.Size = UDim2.new(0.9, 0, 0, 40)
+PlayButton.Position = UDim2.new(0.05, 0, 0.6, 0)
+
+-- وظيفة زر الإغلاق
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- تشغيل الصوت على مستوى الخادم
+PlayButton.MouseButton1Click:Connect(function()
+    local songID = SongInput.Text
+    if tonumber(songID) then
+        -- إرسال الصوت لجميع اللاعبين
+        for _, player in pairs(game.Players:GetPlayers()) do
+            local sound = Instance.new("Sound", player.Character or player:FindFirstChild("PlayerGui"))
+            sound.SoundId = "rbxassetid://" .. songID
+            sound.Volume = 1
+            sound.Looped = false
+            sound:Play()
+
+            sound.Ended:Connect(function()
+                sound:Destroy()
+            end)
+        end
+    else
+        warn("Invalid Song ID!")
+    end
+end)
